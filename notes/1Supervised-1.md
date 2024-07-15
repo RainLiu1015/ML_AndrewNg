@@ -54,3 +54,81 @@ cost function用来表示当前model的表现，cost越少表示model越准确
 
 ## 1.4 Gradient Descent
 
+### 1.4.1 什么是gradient descent
+
+gradient descent 适用于很多情景，而不仅限于减小cost function。
+
+步骤：
+
+- 任意选择一个起始位置，一般是$w = b = 0$
+- 持续改变$w$和$b$，直到达到一个足够满意的结果
+- 在较为复杂的情况中，这实际上是一个优化问题，我们能够找到的也只local optimal
+
+### 1.4.2 algorithm
+
+$w = w - \alpha \frac{\partial}{\partial w}J(w, b)$
+
+- 不断改变w的值，以得到更优的答案
+- $\alpha$：learning rate，通常是0-1之间的一个很小的值，由于控制优化的**步长**->如何选择一个好的learning rate？
+- $\frac{\partial}{\partial w}J(w, b)$：实际上决定了优化的**方向**
+
+类似的：$b = b - \alpha \frac{\text{d}}{\text{d}b}J(w, b)$
+
+几个注意点：
+
+- 我们的目标是收敛（convergence）
+
+- 我们需要同时update $w$和$b$:
+  $$
+  tmpw =w - \alpha \frac{\partial}{\partial w}J(w, b)\\
+  tmpb =b - \alpha \frac{\partial}{\partial b}J(w, b)\\
+  w = tmpw, b = tmpb
+  $$
+  即需要先分别进行update，然后赋值，不能让先update的影响到未update的那个variable。
+
+### 1.4.2 Learning Rate
+
+- 当learning rate太小时，descent速度会很慢，需要更多次的计算和更长的时间
+- 当learning rate太大时，descent可能会出错：错过真正的optimal点，甚至可能永远无法到达——overshoot/diverge
+
+如果当前的J已经在local minimal时，还会update吗？不会，偏导是0——此时的初始值选择非常重要！
+
+#### fix learning rate
+
+- 当我们靠近local minimum时，导数变小，导致update量减少，descent速度减慢
+
+## 1.5 Gradient Descent for Linear Regression
+
+  推导：
+$$
+\begin{aligned}
+\frac{\partial }{\partial w}J(w, b) 
+& = \frac{\partial }{\partial w} \frac{1}{2m}\sum_{i = 1}^m (wx^{(i)} + b - y^{(i)})^2\\
+& = \frac{1}{2m} \sum_{i = 1}^m  2x^{(i)}(wx^{(i)} + b - y^{(i)})\\
+& = \frac{1}{m} \sum_{i = 1}^m  x^{(i)}(wx^{(i)} + b - y^{(i)})\\
+& = \frac{1}{m} \sum_{i = 1}^m  x^{(i)}(f_{w, b}(x^{(i)})- y^{(i)})\\
+\end{aligned}
+$$
+
+$$
+同理，有\frac{\partial }{\partial b}J(w, b)  =  \frac{1}{m} \sum_{i = 1}^m (f_{w, b}(x^{(i)})- y^{(i)})\\
+$$
+
+所以我们有：
+$$
+\begin{aligned}
+重复&\\
+& w = w - \alpha\frac{1}{m} \sum_{i = 1}^m  x^{(i)}(f_{w, b}(x^{(i)})- y^{(i)})\\
+& b = b - \alpha\frac{1}{m} \sum_{i = 1}^m (f_{w, b}(x^{(i)})- y^{(i)})\\
+直到收敛
+\end{aligned}
+$$
+
+- 注意要**同时update** $w$和$b$。
+
+- 在linear regression中，J是$w$和$b$的凹函数，也就是说不存在多个local minimum；于是最后的update**一定会converge**。
+
+### 1.5.1 Batch Gradient Descent
+
+- Batch：Each step of gradient descent uses all the training examples
+
